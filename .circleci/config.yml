@@ -3,18 +3,25 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/node:14.17.3  # Upgrade to a more recent Node.js version
+      - image: circleci/node:14.17.3  # Using a recent Node.js version
     working_directory: ~/repo
     steps:
       - checkout
       - run:
+          name: Install NPM Locally
+          command: "mkdir -p ~/.npm-global && npm config set prefix '~/.npm-global'"
+      - run:
           name: Update NPM
-          command: "npm install -g npm@latest --unsafe-perm"
+          command: "npm install -g npm@latest"
+          environment:
+            PATH: ~/.npm-global/bin:$PATH
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: Install Dependencies
-          command: npm install --unsafe-perm
+          command: npm install
+          environment:
+            PATH: ~/.npm-global/bin:$PATH
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
@@ -22,3 +29,5 @@ jobs:
       - run:
           name: Run tests
           command: npm run test
+          environment:
+            PATH: ~/.npm-global/bin:$PATH
