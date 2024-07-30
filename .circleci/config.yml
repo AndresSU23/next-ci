@@ -2,14 +2,14 @@ version: 2.1
 
 jobs:
   build:
-    working_directory: ~/repo
     docker:
-      - image: circleci/node:14.17.3
+      - image: circleci/node:14.17.3  # Upgrade to a more recent Node.js version
+    working_directory: ~/repo
     steps:
       - checkout
       - run:
           name: Update NPM
-          command: "sudo npm install -g npm@latest"
+          command: "npm install -g npm@latest"
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
